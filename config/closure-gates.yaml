@@ -1,0 +1,44 @@
+# Ticket-closure quality gates evaluated by every impact report.
+# Edit freely: ids must be unique; `check` must be one of the automatic checks below or `human`.
+#   entry-points   affected endpoints/jobs computed without hitting the traversal budget
+#   compatibility  contract / schema / configuration risks evaluated
+#   unknowns       unresolved and ambiguous dependencies listed
+#   regression     regression test candidates identified
+#   traceability   commit SHA and file:line evidence present
+#   root-cause     root-cause candidate locations listed (confirmation is always human)
+#   human          always needs a person (status NEEDS_HUMAN)
+# The tool never marks a gate as satisfied on a person's behalf: automatic checks only report EVIDENCE_PRESENT / MISSING.
+version: 1
+gates:
+  - id: G1
+    title: Root cause identified with code evidence
+    requirement: The defect's root cause is stated and backed by file:line evidence at the analysed commit.
+    check: root-cause
+  - id: G2
+    title: Fix scope is the smallest safe change
+    requirement: The proposed change and its alternatives are described; unrelated refactoring is excluded.
+    check: human
+  - id: G3
+    title: Affected entry points enumerated
+    requirement: Every endpoint, scheduled job and listener that can reach the changed code is listed and classified.
+    check: entry-points
+  - id: G4
+    title: Backward compatibility assessed
+    requirement: API contracts, database schema, configuration keys and outbound integrations were checked.
+    check: compatibility
+  - id: G5
+    title: Regression tests identified
+    requirement: Tests to add or run are listed with rationale; executed results are attached before closure.
+    check: regression
+  - id: G6
+    title: Unknowns and residual risks documented
+    requirement: Unresolved/ambiguous dependencies and runtime-only behaviour are written down, not omitted.
+    check: unknowns
+  - id: G7
+    title: Verification steps recorded
+    requirement: Steps and environment used to verify the fix are recorded by the engineer.
+    check: human
+  - id: G8
+    title: Traceable to a commit
+    requirement: Analysis states the repository commit and cites file:line locations from it.
+    check: traceability

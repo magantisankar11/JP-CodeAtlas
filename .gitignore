@@ -1,0 +1,60 @@
+# Dependencies and build output
+node_modules/
+dist/
+target/
+out/
+.vite/
+*.tsbuildinfo
+*.class
+.eslintcache
+.cache/
+
+# Generated graphs, databases, caches and extracted sources (never commit: large and contain proprietary source)
+workspace/
+**/.partial/
+*.db
+*.db-wal
+*.db-shm
+*.db-journal
+*.sqlite
+*.sqlite3
+# Graphs written outside workspace/ (analyzer --out, combine --out); only the synthetic test graphs are tracked
+*.ndjson
+!server/test/data/*.ndjson
+*.snapshot.json
+
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+config/repos.yaml
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+.npmrc
+.claude/settings.local.json
+
+# Logs, test reports, temporary files
+*.log
+*.err
+coverage/
+test-results/
+playwright-report/
+*.tmp
+
+# Editors and OS
+.idea/
+.vscode/
+*.iml
+.project
+.classpath
+.settings/
+.factorypath
+*.swp
+*~
+.DS_Store
+Thumbs.db
+desktop.ini

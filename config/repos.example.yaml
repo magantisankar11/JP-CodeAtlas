@@ -1,0 +1,16 @@
+# Repositories kept current by `npm run sync`. Copy to config/repos.yaml (git-ignored: it holds local paths).
+# Without config/repos.yaml, sync uses the repositories recorded in the current system snapshot.
+#
+# Either one java (backend) and one ui (frontend) repository, combined into the snapshot named by system.id,
+# or a single repository published under its own id. Sync only reads the repositories (never fetches or checks out).
+system:
+  id: justperform-system
+  # Expressions the UI uses as the Core API base URL (see multi/stitch.ts).
+  coreBases: [process.env.JP_API]
+repos:
+  - id: justperform-core
+    kind: java
+    path: C:/Users/<you>/projects/JustPerform-Core
+  - id: justperform-ui
+    kind: ui
+    path: C:/Users/<you>/projects/main/JustPerform-UI

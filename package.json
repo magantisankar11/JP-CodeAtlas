@@ -1,0 +1,20 @@
+{
+  "name": "java-code-intel",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Java Code Intelligence: API flow explorer and impact analyzer",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "setup": "npm --prefix server install && npm --prefix web install",
+    "build:analyzer": "cd analyzer-java && mvn -B -q package -DskipTests",
+    "test:analyzer": "cd analyzer-java && mvn -B -q test",
+    "load": "npm --prefix server run load --",
+    "sync": "npm --prefix server run sync --",
+    "server": "npm --prefix server run dev",
+    "web": "npm --prefix web run dev",
+    "test": "npm --prefix server test && npm --prefix web run typecheck",
+    "typecheck": "npm --prefix server run typecheck && npm --prefix web run typecheck"
+  }
+}

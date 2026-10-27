@@ -1,0 +1,28 @@
+{
+  "name": "@jci/server",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/main.ts",
+    "start": "tsx src/main.ts",
+    "load": "tsx src/cli/load.ts",
+    "sync": "tsx src/cli/sync.ts",
+    "impact": "tsx src/cli/impact.ts",
+    "combine": "tsx src/cli/combine.ts",
+    "test": "node --import tsx --test test/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "fastify": "^5.12.7",
+    "yaml": "^2.9.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/node": "^22.20.5",
+    "tsx": "^4.23.15",
+    "typescript": "~5.9.3"
+  }
+}

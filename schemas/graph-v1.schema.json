@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://java-code-intel.local/schemas/graph-v1.schema.json",
+  "title": "Java Code Intelligence graph record (v1)",
+  "description": "One line of analyzer NDJSON output. The first line is always a snapshot record. Contract rule: within major version 1, fields may be added but never removed or re-typed.",
+  "oneOf": [
+    { "$ref": "#/$defs/snapshot" },
+    { "$ref": "#/$defs/node" },
+    { "$ref": "#/$defs/edge" },
+    { "$ref": "#/$defs/diagnostic" }
+  ],
+  "$defs": {
+    "resolution": {
+      "description": "CONFIRMED = compiler binding to exactly one declaration. FRAMEWORK_DERIVED = derived by a documented rule (Spring bean resolution, annotation semantics, single implementation, Lombok synthesis). AMBIGUOUS = several candidates, all listed in attrs.candidates. UNRESOLVED = target unknown, reason in attrs.reason.",
+      "enum": ["CONFIRMED", "FRAMEWORK_DERIVED", "AMBIGUOUS", "UNRESOLVED"]
+    },
+    "nodeKind": {
+      "enum": [
+        "API_ENDPOINT", "CONTROLLER", "SERVICE", "REPOSITORY", "COMPONENT", "CONFIGURATION",
+        "CLASS", "INTERFACE", "ENUM", "RECORD", "ANNOTATION", "DTO", "ENTITY", "METHOD",
+        "SQL_STATEMENT", "DATABASE_TABLE", "DATABASE_COLUMN", "EXTERNAL_API", "EVENT",
+        "TEST_CASE", "UNRESOLVED",
+        "DATABASE_PROCEDURE", "CONFIG_PROPERTY",
+        "UI_COMPONENT", "UI_MODULE", "UI_STORE", "UI_FUNCTION", "UI_ROUTE", "UI_HTTP_CALL"
+      ],
+      "description": "1.1.0 added DATABASE_PROCEDURE, CONFIG_PROPERTY. 1.2.0 added the front-end kinds UI_COMPONENT (.vue file), UI_MODULE (JS/TS file), UI_STORE (Pinia store file), UI_FUNCTION, UI_ROUTE (vue-router record), UI_HTTP_CALL (HTTP client call site). Values are only ever added within major version 1."
+    },
+    "edgeKind": {
+      "enum": [
+        "EXPOSES", "DECLARES", "CALLS", "IMPLEMENTS", "EXTENDS", "INJECTS", "QUERIES",
+        "READS", "WRITES", "MAPS_TO", "PUBLISHES", "CONSUMES", "CONFIGURES",
+        "HANDLES_EXCEPTION", "TESTS",
+        "ACCEPTS", "RETURNS", "USES_TYPE", "HAS_FIELD_TYPE", "THROWS", "CALLS_EXTERNAL",
+        "INVOKES_PROCEDURE", "READS_CONFIG", "SCHEDULES", "TRIGGERS",
+        "CONTAINS", "IMPORTS", "RENDERS", "ROUTES_TO", "MAKES_HTTP_CALL", "CALLS_API"
+      ],
+      "description": "1.1.0 added ACCEPTS/RETURNS (endpoint -> contract type), USES_TYPE (method -> type), HAS_FIELD_TYPE (type -> field type), THROWS (method -> exception type), CALLS_EXTERNAL (method -> EXTERNAL_API), INVOKES_PROCEDURE (SQL -> procedure), READS_CONFIG (type/method -> CONFIG_PROPERTY), SCHEDULES (scheduler call site -> job method), TRIGGERS (EVENT -> listener). PUBLISHES is method -> EVENT. 1.2.0 added CONTAINS (UI file -> UI_FUNCTION), IMPORTS (UI file -> UI file), RENDERS (component -> child component), ROUTES_TO (UI_ROUTE -> component), MAKES_HTTP_CALL (UI_FUNCTION -> UI_HTTP_CALL), CALLS_API (UI_HTTP_CALL -> API_ENDPOINT, cross-repository, added by server combine). System snapshots list their repositories in scope.repos [{repoId, role, repoPath, commitSha, pathPrefix}]; file paths of non-primary repositories start with pathPrefix ('@<repoId>/')."
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["filePath", "line", "rule"],
+      "properties": {
+        "filePath": { "type": "string", "description": "Repository-relative, forward slashes." },
+        "line": { "type": "integer", "minimum": 0 },
+        "column": { "type": "integer", "minimum": 0 },
+        "rule": { "type": "string", "description": "Analyzer rule that produced the fact, e.g. BINDING, CHA_SINGLE_IMPL, QUALIFIER." }
+      },
+      "additionalProperties": true
+    },
+    "snapshot": {
+      "type": "object",
+      "required": ["type", "schemaVersion", "repoId", "commitSha", "analyzerVersion", "engine", "startedAt", "finishedAt", "scope", "stats"],
+      "properties": {
+        "type": { "const": "snapshot" },
+        "schemaVersion": { "type": "string", "pattern": "^1\\.\\d+\\.\\d+$" },
+        "repoId": { "type": "string" },
+        "repoPath": { "type": "string" },
+        "commitSha": { "type": "string", "description": "Full git SHA, or nogit-<sha256 prefix> for non-git sources." },
+        "sourceMode": { "enum": ["HEAD", "WORKTREE"] },
+        "analyzerVersion": { "type": "string" },
+        "engine": { "type": "string" },
+        "startedAt": { "type": "string", "format": "date-time" },
+        "finishedAt": { "type": "string", "format": "date-time" },
+        "scope": {
+          "type": "object",
+          "properties": {
+            "sourceRoots": { "type": "array", "items": { "type": "string" } },
+            "includePackages": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "stats": { "type": "object" }
+      },
+      "additionalProperties": true
+    },
+    "node": {
+      "type": "object",
+      "required": ["type", "id", "kind", "name"],
+      "properties": {
+        "type": { "const": "node" },
+        "id": { "type": "string", "description": "Stable across commits: <prefix>:<fully qualified identity>." },
+        "kind": { "$ref": "#/$defs/nodeKind" },
+        "name": { "type": "string" },
+        "fqn": { "type": "string" },
+        "signature": { "type": "string" },
+        "module": { "type": "string" },
+        "package": { "type": "string" },
+        "filePath": { "type": "string" },
+        "lineStart": { "type": "integer" },
+        "lineEnd": { "type": "integer" },
+        "inScope": { "type": "boolean", "description": "False for referenced nodes outside the analysed packages (outgoing edges not extracted)." },
+        "attrs": { "type": "object" }
+      },
+      "additionalProperties": true
+    },
+    "edge": {
+      "type": "object",
+      "required": ["type", "id", "kind", "src", "dst", "resolution", "evidence"],
+      "properties": {
+        "type": { "const": "edge" },
+        "id": { "type": "string" },
+        "kind": { "$ref": "#/$defs/edgeKind" },
+        "src": { "type": "string" },
+        "dst": { "type": "string" },
+        "resolution": { "$ref": "#/$defs/resolution" },
+        "evidence": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/evidence" } },
+        "attrs": { "type": "object" }
+      },
+      "additionalProperties": true
+    },
+    "diagnostic": {
+      "type": "object",
+      "required": ["type", "severity", "code", "message"],
+      "properties": {
+        "type": { "const": "diagnostic" },
+        "severity": { "enum": ["INFO", "WARN", "ERROR"] },
+        "code": { "type": "string" },
+        "message": { "type": "string" },
+        "filePath": { "type": "string" },
+        "line": { "type": "integer" }
+      },
+      "additionalProperties": true
+    }
+  }
+}

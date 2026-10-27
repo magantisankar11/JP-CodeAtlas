@@ -1,0 +1,34 @@
+{
+  "description": "Golden facts for fixtures/simple-ui (analyzer-ui). Every listed node and edge must exist with the given kind/resolution/rule; forbidden edges must not.",
+  "nodes": [
+    { "id": "ui:file:src/pages/OrderPage.vue", "kind": "UI_COMPONENT" },
+    { "id": "ui:file:src/components/OrderList.vue", "kind": "UI_COMPONENT" },
+    { "id": "ui:file:src/pages/Tabs.vue", "kind": "UI_COMPONENT" },
+    { "id": "ui:file:src/services/shop-service.js", "kind": "UI_MODULE" },
+    { "id": "ui:route:/orders/:id", "kind": "UI_ROUTE", "attrs": { "component": "src/pages/OrderPage.vue", "lazy": true, "routeName": "order" } },
+    { "id": "ui:route:/tabs", "kind": "UI_ROUTE", "attrs": { "component": "src/pages/Tabs.vue", "lazy": false } },
+    { "id": "ui:test:test/unit/OrderPage.spec.js", "kind": "TEST_CASE" },
+    { "id": "ui:http:src/services/shop-service.js#L8C12", "kind": "UI_HTTP_CALL", "attrs": { "httpMethod": "GET", "url": "{base}api/orders/${?}", "resolved": false } },
+    { "id": "ui:http:src/services/shop-service.js#L16C12", "kind": "UI_HTTP_CALL", "attrs": { "httpMethod": "GET", "url": "{base}api/orders/search?q=1", "resolved": true } },
+    { "id": "ui:http:src/services/shop-service.js#L20C12", "kind": "UI_HTTP_CALL", "attrs": { "httpMethod": "POST", "url": "{base}api/orders", "resolved": true } },
+    { "id": "ui:http:src/services/shop-service.js#L24C12", "kind": "UI_HTTP_CALL", "attrs": { "httpMethod": "DELETE", "url": "{base}api/orders/${?}", "resolved": false } },
+    { "id": "ui:http:src/services/shop-service.js#L39C12", "kind": "UI_HTTP_CALL", "attrs": { "httpMethod": "POST", "url": "{base}summary" } }
+  ],
+  "variants": { "ui:http:src/services/shop-service.js#L16C12": ["{base}api/orders/search?q=1", "{base}api/orders/search/v2?q=1"] },
+  "edges": [
+    { "kind": "ROUTES_TO", "src": "ui:route:/orders/:id", "dst": "ui:file:src/pages/OrderPage.vue", "resolution": "FRAMEWORK_DERIVED", "rule": "VUE_ROUTER" },
+    { "kind": "RENDERS", "src": "ui:file:src/pages/OrderPage.vue", "dst": "ui:file:src/components/OrderList.vue", "resolution": "FRAMEWORK_DERIVED", "rule": "TEMPLATE_COMPONENT" },
+    { "kind": "RENDERS", "src": "ui:file:src/pages/Tabs.vue", "dst": "ui:file:src/components/OrderList.vue", "resolution": "AMBIGUOUS", "rule": "TEMPLATE_DYNAMIC_COMPONENT" },
+    { "kind": "RENDERS", "src": "ui:file:src/pages/Tabs.vue", "dst": "ui:file:src/components/Empty.vue", "resolution": "AMBIGUOUS", "rule": "TEMPLATE_DYNAMIC_COMPONENT" },
+    { "kind": "CALLS", "src": "ui:fn:src/pages/OrderPage.vue#<template>", "dst": "ui:fn:src/pages/OrderPage.vue#methods.load", "resolution": "FRAMEWORK_DERIVED", "rule": "TEMPLATE_EVENT_HANDLER" },
+    { "kind": "CALLS", "src": "ui:fn:src/pages/OrderPage.vue#methods.load", "dst": "ui:fn:src/services/shop-service.js#ShopService.getOrder", "resolution": "CONFIRMED", "rule": "IMPORTED_INSTANCE" },
+    { "kind": "CALLS", "src": "ui:fn:src/components/OrderList.vue#<template>", "dst": "ui:fn:src/components/OrderList.vue#refresh", "resolution": "FRAMEWORK_DERIVED", "rule": "TEMPLATE_EVENT_HANDLER" },
+    { "kind": "CALLS", "src": "ui:fn:src/components/OrderList.vue#refresh", "dst": "ui:fn:src/services/shop-service.js#ShopService.searchOrders", "resolution": "CONFIRMED", "rule": "IMPORTED_INSTANCE" },
+    { "kind": "MAKES_HTTP_CALL", "src": "ui:fn:src/services/shop-service.js#ShopService.getOrder", "dst": "ui:http:src/services/shop-service.js#L8C12", "resolution": "CONFIRMED", "rule": "HTTP_CLIENT_CALL" },
+    { "kind": "TESTS", "src": "ui:test:test/unit/OrderPage.spec.js", "dst": "ui:file:src/pages/OrderPage.vue", "resolution": "CONFIRMED", "rule": "TEST_IMPORT" }
+  ],
+  "forbiddenEdges": [
+    { "kind": "RENDERS", "src": "ui:file:src/pages/OrderPage.vue", "dst": "ui:file:src/components/Empty.vue" },
+    { "kind": "TESTS", "src": "ui:test:test/unit/OrderPage.spec.js", "dst": "ui:file:src/services/shop-service.js" }
+  ]
+}
